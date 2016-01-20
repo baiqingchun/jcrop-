@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="jquery.Jcrop.css">
+    <script src="jquery-2.1.3.min.js"></script>
+    <script src="jquery.Jcrop.js"></script>
+</head>
+<body>
+<input id="inp" type="file">
+<div class="jc-demo-box">
+    <img class="img" src="image3.jpg" alt="">
+</div>
+<form id="coords"
+      class="coords"
+      onsubmit="return false;"
+      action="http://example.com/post.php">
+
+    <div class="inline-labels">
+        <label>X1 <input type="text" size="4" id="x1" name="x1" /></label>
+        <label>Y1 <input type="text" size="4" id="y1" name="y1" /></label>
+        <label>X2 <input type="text" size="4" id="x2" name="x2" /></label>
+        <label>Y2 <input type="text" size="4" id="y2" name="y2" /></label>
+        <label>W <input type="text" size="4" id="w" name="w" /></label>
+        <label>H <input type="text" size="4" id="h" name="h" /></label>
+    </div>
+</form>
+<button class="first">1</button>
+<button class="second">2</button>
+<button class="ok">确定</button>
+<img class="jiequ" src="" alt="">
+
+<script>
+
+    var div=document.getElementById('aaa');
+    var jcrop_api =null;
+    var option={};
+    var bb=function(e){
+        var files = e.target.files[0];
+        var reader = new FileReader();
+        reader.onload =   function(e) {
+            e.preventDefault()
+            $('.img').attr('src',this.result);
+            $('.img').Jcrop({
+                onChange:   showCoords,
+                onSelect:   showCoords,
+                onRelease:  clearCoords
+            },function(){
+                jcrop_api = this;
+                console.log(this);
+                jcrop_api.setSelect([0,0,100,200])
+            });
+
+            /*     var span = document.createElement('span');
+             $('.img').Jcrop();
+             span.innerHTML = '<img class="thumb" style="width:200px;height:200px" src="'+ this.result +'"  />';
+             console.log(this.result);
+             // div.appendChild(span);
+             $(div).html(span)*/
+        };
+        reader.readAsDataURL(files);
+    };
+    function showCoords(c)
+    {
+        option = c
+        $('#x1').val(c.x);
+        $('#y1').val(c.y);
+        $('#x2').val(c.x2);
+        $('#y2').val(c.y2);
+        $('#w').val(c.w);
+        $('#h').val(c.h);
+    };
+    function clearCoords()
+    {
+        $('#coords input').val('');
+    };
+    $('#inp').change(function(e){
+        e.preventDefault()
+        bb(e);
+
+    })
+    $('.first').click(function(e){
+        jcrop_api.animateTo([0,0,100,100],function(){
+
+        });
+    })
+    $('.second').click(function(e){
+        jcrop_api.animateTo([100,100,200,200],function(){
+
+        });
+    })
+    function canvasCutImage(option){
+        //$('#canvasImage').css({
+        //    "height":option.h+"px",
+        //    "width":option.w+"px"
+        //})
+        //$('#canvasImage').height();
+        //$('#canvasImage').width();
+//        $('#canvasImage').attr({width:option.w,height:option.h})
+//        var canvasOfPage=document.getElementById('canvasImage');
+        var canvasOfPage = document.createElement("canvas");
+        canvasOfPage.width = 200;
+        canvasOfPage.height = 200;
+        var conText = canvasOfPage.getContext("2d");
+        var img=$('.img').get(0);
+        conText.drawImage(img,option.x,option.y,option.w,option.h,0,0,200,200);
+       var base64=canvasOfPage.toDataURL("image/png");
+        $('.jiequ').attr('src',base64);
+        console.log(canvasOfPage.toDataURL())
+    }
+    $('.ok').click(function(){
+        canvasCutImage(option);
+    });
+</script>
+</body>
+</html>
